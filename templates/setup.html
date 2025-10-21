@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DexArm Setup - AI Sketch Booth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='setup.css') }}">
+</head>
+<body>
+    <div id="setup-app">
+        <div class="header">
+            <h1>DexArm Setup Wizard</h1>
+            <a href="/" class="btn-secondary">Back to Photobooth</a>
+        </div>
+
+        <div class="setup-container">
+            <!-- Step 1: Connection -->
+            <div class="setup-step" id="step-connect" data-step="1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h2>Connect DexArm</h2>
+                </div>
+
+                <div class="step-content">
+                    <p>Make sure your DexArm is powered on and connected via USB.</p>
+
+                    <div class="connection-status" id="connectionStatus">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="statusText">Not connected</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="portInput">COM Port (leave empty for auto-detect):</label>
+                        <input type="text" id="portInput" placeholder="COM3 or leave empty">
+                    </div>
+
+                    <button class="btn-primary" id="connectBtn">Connect</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Homing -->
+            <div class="setup-step" id="step-home" data-step="2" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h2>Home DexArm</h2>
+                </div>
+
+                <div class="step-content">
+                    <p><strong>⚠️ Important:</strong> Make sure the arm has clear space to move!</p>
+                    <p>Homing will move the arm to its zero position.</p>
+
+                    <button class="btn-primary" id="homeBtn">Home DexArm</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Set Corner 1 -->
+            <div class="setup-step" id="step-corner1" data-step="3" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h2>Set First Corner (Top-Left)</h2>
+                </div>
+
+                <div class="step-content">
+                    <p>Position the pen at the <strong>top-left corner</strong> of your paper.</p>
+                    <p>The motors will unlock automatically. Move the arm by hand to position it.</p>
+
+                    <div class="manual-controls">
+                        <div class="position-display live">
+                            <h3>📍 Last Position:</h3>
+                            <div class="position-values">
+                                <span>X: <strong id="posX">--</strong> mm</span>
+                                <span>Y: <strong id="posY">--</strong> mm</span>
+                                <span>Z: <strong id="posZ">--</strong> mm</span>
+                            </div>
+                            <div class="position-status" id="positionStatus1">
+                                <span class="updating-indicator"></span>
+                                <span>Preparing...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="saveCorner1Btn">✓ Save Corner 1</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Set Corner 2 -->
+            <div class="setup-step" id="step-corner2" data-step="4" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h2>Set Second Corner (Bottom-Right)</h2>
+                </div>
+
+                <div class="step-content">
+                    <p>Position the pen at the <strong>bottom-right corner</strong> of your paper.</p>
+                    <p><strong>Tip:</strong> Use the same Z-height as Corner 1 for best results.</p>
+
+                    <div class="manual-controls">
+                        <div class="position-display live">
+                            <h3>📍 Last Position:</h3>
+                            <div class="position-values">
+                                <span>X: <strong id="posX2">--</strong> mm</span>
+                                <span>Y: <strong id="posY2">--</strong> mm</span>
+                                <span>Z: <strong id="posZ2">--</strong> mm</span>
+                            </div>
+                            <div class="position-status" id="positionStatus2">
+                                <span class="updating-indicator"></span>
+                                <span>Preparing...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="saveCorner2Btn">✓ Save Corner 2</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Resting Position -->
+            <div class="setup-step" id="step-resting" data-step="5" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <h2>Set Resting Position</h2>
+                </div>
+
+                <div class="step-content">
+                    <p>Position the arm where it should rest when not drawing.</p>
+                    <p><strong>Tip:</strong> Choose a position that's out of the way, above the paper.</p>
+
+                    <div class="manual-controls">
+                        <div class="position-display live">
+                            <h3>📍 Last Position:</h3>
+                            <div class="position-values">
+                                <span>X: <strong id="posX3">--</strong> mm</span>
+                                <span>Y: <strong id="posY3">--</strong> mm</span>
+                                <span>Z: <strong id="posZ3">--</strong> mm</span>
+                            </div>
+                            <div class="position-status" id="positionStatus3">
+                                <span class="updating-indicator"></span>
+                                <span>Preparing...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="saveRestingBtn">✓ Save Resting Position</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Complete -->
+            <div class="setup-step" id="step-complete" data-step="6" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">✓</div>
+                    <h2>Setup Complete!</h2>
+                </div>
+
+                <div class="step-content">
+                    <div class="success-message">
+                        <h3>✅ Calibration Successful</h3>
+                        <p>Your drawing area has been configured.</p>
+                    </div>
+
+                    <div class="calibration-summary">
+                        <h3>Drawing Area:</h3>
+                        <div id="areaSummary"></div>
+                    </div>
+
+                    <div class="test-section">
+                        <h3>🧪 Test Your Calibration</h3>
+                        <p>Draw a frame and X to verify the drawing area is correct.</p>
+                        <p><em>The arm will automatically return to rest position after the test.</em></p>
+                        <button class="btn-test" id="testDrawBtn">▶️ Test Draw Frame + X</button>
+                        <div class="test-status" id="testStatus"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <a href="/" class="btn-primary">Start Photobooth Mode</a>
+                        <button class="btn-secondary" id="resetBtn">Recalibrate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='setup.js') }}"></script>
+</body>
+</html>

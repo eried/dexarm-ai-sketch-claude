@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sketch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h1>AI Sketch</h1>
+            <div class="header-buttons">
+                <a href="/settings" class="settings-link admin-only">⚙️ General Settings</a>
+                <a href="/setup" class="setup-link admin-only">🤖 Robot Arm Calibration</a>
+                <button id="uploadBtn" class="upload-btn admin-only">📁 Gallery</button>
+                <button id="fullscreenBtn" class="fullscreen-btn">🖥️ Kiosk Mode</button>
+            </div>
+        </div>
+
+        <div class="photobooth-container">
+            <!-- Camera view -->
+            <div class="camera-section">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+                <div class="flash" id="flash"></div>
+
+                <!-- Result preview modal (hidden until photo taken) -->
+                <div id="resultPreview" class="result-preview-modal" style="display: none;">
+                    <div class="result-modal-content">
+                        <img id="caricatureImg" class="result-modal-image" src="" alt="Caricature">
+                        <div class="result-modal-buttons">
+                            <button id="drawBtn" class="draw-btn modal-btn" style="display: none;">🖊️ Draw It!</button>
+                            <button id="retakeBtn" class="retake-btn modal-btn">📸 Retake</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls section -->
+            <div class="controls-section">
+                <div class="prompt-section">
+                    <label for="promptInput">Add a scenario:</label>
+                    <input
+                        type="text"
+                        id="promptInput"
+                        class="prompt-input"
+                        placeholder="Enter scenario or situation"
+                    />
+
+                    <!-- Suggestions dropdown -->
+                    <div class="suggestions-container" id="suggestionsContainer">
+                        <div class="suggestions-grid" id="suggestionsGrid"></div>
+                    </div>
+                </div>
+
+                <button id="captureBtn" class="capture-btn">📸 Take Photo</button>
+
+                <div class="status" id="status"></div>
+            </div>
+        </div>
+
+        <!-- Gallery Modal -->
+        <div id="galleryModal" class="gallery-modal" style="display: none;">
+            <div class="gallery-content">
+                <div class="gallery-header">
+                    <h2>📁 Gallery</h2>
+                    <button id="closeGalleryBtn" class="close-gallery-btn">✕</button>
+                </div>
+                <div id="galleryGrid" class="gallery-grid">
+                    <div class="gallery-loading">Loading photos...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay with Paintbrush Animation -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-container-wrapper">
+                <div class="canvas-container">
+                    <h1 class="loading-title">Creating Your Masterpiece</h1>
+
+                    <div class="progress-bar-container">
+                        <div class="paint-stroke"></div>
+                        <div class="progress-bar" id="progressBar"></div>
+
+                        <div class="paintbrush" id="paintbrush">
+                            <div class="brush-handle"></div>
+                            <div class="brush-ferrule"></div>
+                            <div class="brush-bristles">
+                                <div class="bristle"></div>
+                                <div class="bristle"></div>
+                                <div class="bristle"></div>
+                                <div class="bristle"></div>
+                                <div class="bristle"></div>
+                                <div class="bristle"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="percentage" id="percentage">0%</div>
+                    <div class="status-text" id="statusText">Initializing AI...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

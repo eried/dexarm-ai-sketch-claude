@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paintbrush Loading Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            perspective: 1000px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px;
+            transform-style: preserve-3d;
+        }
+
+        .title {
+            text-align: center;
+            color: #1e3c72;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .progress-bar-container {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background: #e0e0e0;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg,
+                #ff6b6b 0%,
+                #ff8a7a 15%,
+                #ffaa88 25%,
+                #feca57 40%,
+                #fee68a 50%,
+                #a8e6f0 60%,
+                #7dd9f5 75%,
+                #48dbfb 90%,
+                #6fe0fc 100%);
+            background-size: 300% 100%;
+            border-radius: 30px;
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: shimmer 8s linear infinite;
+            box-shadow: 0 0 20px rgba(72, 219, 251, 0.5);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 300% 0; }
+            100% { background-position: -300% 0; }
+        }
+
+        .paintbrush {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            animation: paint 30s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+            z-index: 10;
+        }
+
+        @keyframes paint {
+            0%, 100% {
+                left: -5%;
+                transform: translate(-50%, -50%) rotate(-45deg) scale(1);
+            }
+            5% {
+                transform: translate(-50%, -60%) rotate(-30deg) scale(1.02);
+            }
+            10% {
+                transform: translate(-50%, -40%) rotate(-60deg) scale(1.05);
+            }
+            15% {
+                transform: translate(-50%, -60%) rotate(-25deg) scale(1.03);
+            }
+            20% {
+                transform: translate(-50%, -40%) rotate(-65deg) scale(1.02);
+            }
+            25% {
+                transform: translate(-50%, -58%) rotate(-35deg) scale(1.01);
+            }
+            30% {
+                transform: translate(-50%, -42%) rotate(-55deg) scale(1.04);
+            }
+            35% {
+                transform: translate(-50%, -62%) rotate(-30deg) scale(1.02);
+            }
+            40% {
+                transform: translate(-50%, -38%) rotate(-60deg) scale(1.05);
+            }
+            45% {
+                transform: translate(-50%, -60%) rotate(-40deg) scale(1.03);
+            }
+            50% {
+                left: 105%;
+                transform: translate(-50%, -40%) rotate(-65deg) scale(1);
+            }
+            55% {
+                transform: translate(-50%, -58%) rotate(-35deg) scale(1.02);
+            }
+            60% {
+                transform: translate(-50%, -42%) rotate(-55deg) scale(1.05);
+            }
+            65% {
+                transform: translate(-50%, -62%) rotate(-28deg) scale(1.03);
+            }
+            70% {
+                transform: translate(-50%, -38%) rotate(-62deg) scale(1.04);
+            }
+            75% {
+                transform: translate(-50%, -60%) rotate(-32deg) scale(1.01);
+            }
+            80% {
+                transform: translate(-50%, -40%) rotate(-58deg) scale(1.03);
+            }
+            85% {
+                transform: translate(-50%, -58%) rotate(-38deg) scale(1.02);
+            }
+            90% {
+                transform: translate(-50%, -42%) rotate(-52deg) scale(1.04);
+            }
+            95% {
+                transform: translate(-50%, -60%) rotate(-42deg) scale(1.02);
+            }
+        }
+
+        .brush-handle {
+            position: absolute;
+            width: 20px;
+            height: 100px;
+            background: linear-gradient(180deg, #8B4513 0%, #D2691E 100%);
+            border-radius: 10px;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: inset -2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .brush-ferrule {
+            position: absolute;
+            width: 24px;
+            height: 25px;
+            background: linear-gradient(180deg, #C0C0C0 0%, #808080 100%);
+            border-radius: 3px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .brush-bristles {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 0 0 20px 20px;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+        }
+
+        .bristle {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: #1a252f;
+            bottom: -10px;
+            animation: bristleWave 0.5s ease-in-out infinite;
+        }
+
+        .bristle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .bristle:nth-child(2) { left: 25%; animation-delay: 0.1s; }
+        .bristle:nth-child(3) { left: 40%; animation-delay: 0.2s; }
+        .bristle:nth-child(4) { left: 55%; animation-delay: 0.1s; }
+        .bristle:nth-child(5) { left: 70%; animation-delay: 0s; }
+        .bristle:nth-child(6) { left: 85%; animation-delay: 0.15s; }
+
+        @keyframes bristleWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.3); }
+        }
+
+        .paint-stroke {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg,
+                rgba(255, 107, 107, 0.08) 0%,
+                rgba(255, 138, 122, 0.10) 15%,
+                rgba(255, 170, 136, 0.12) 25%,
+                rgba(254, 202, 87, 0.15) 40%,
+                rgba(254, 230, 138, 0.12) 50%,
+                rgba(168, 230, 240, 0.12) 60%,
+                rgba(125, 217, 245, 0.10) 75%,
+                rgba(72, 219, 251, 0.08) 100%);
+            border-radius: 30px;
+            top: 0;
+            opacity: 0;
+            animation: strokeAppear 30s ease-in-out infinite;
+        }
+
+        @keyframes strokeAppear {
+            0%, 100% {
+                left: 0;
+                width: 0;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            50% {
+                left: 0;
+                width: 100%;
+                opacity: 0.25;
+            }
+            90% {
+                opacity: 0;
+            }
+        }
+
+        .percentage {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.3s forwards;
+        }
+
+        .status-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            color: #7f8c8d;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="canvas-container">
+            <h1 class="title">Creating Your Masterpiece</h1>
+
+            <div class="progress-bar-container">
+                <div class="paint-stroke"></div>
+                <div class="progress-bar" id="progressBar"></div>
+
+                <div class="paintbrush" id="paintbrush">
+                    <div class="brush-handle"></div>
+                    <div class="brush-ferrule"></div>
+                    <div class="brush-bristles">
+                        <div class="bristle"></div>
+                        <div class="bristle"></div>
+                        <div class="bristle"></div>
+                        <div class="bristle"></div>
+                        <div class="bristle"></div>
+                        <div class="bristle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="percentage" id="percentage">0%</div>
+            <div class="status-text" id="statusText">Initializing AI...</div>
+        </div>
+    </div>
+
+    <script>
+        class PaintbrushLoader {
+            constructor() {
+                this.progressBar = document.getElementById('progressBar');
+                this.percentage = document.getElementById('percentage');
+                this.statusText = document.getElementById('statusText');
+                this.currentProgress = 0;
+                this.targetProgress = 0;
+                this.duration = 30000; // 30 seconds
+
+                // Each stage has multiple random message options
+                this.messageStages = [
+                    // Stage 1: Initialization
+                    [
+                        'Connecting to AI brain...',
+                        'Initializing AI engine...',
+                        'Waking up the AI...',
+                        'Booting up neural networks...',
+                        'Starting the magic...'
+                    ],
+                    // Stage 2: Photo analysis
+                    [
+                        'Analyzing your stunning face...',
+                        'Studying your photo...',
+                        'Reading your features...',
+                        'Examining every pixel...',
+                        'Getting to know you...'
+                    ],
+                    // Stage 3: Background removal
+                    [
+                        'Removing background...',
+                        'Cutting you out...',
+                        'Erasing the boring parts...',
+                        'Making background disappear...',
+                        'Isolating the star of the show...'
+                    ],
+                    // Stage 4: Depth mapping
+                    [
+                        'Creating depth map...',
+                        'Calculating 3D information...',
+                        'Measuring dimensions...',
+                        'Mapping your contours...',
+                        'Understanding your shape...'
+                    ],
+                    // Stage 5: Line art generation
+                    [
+                        'Generating line art...',
+                        'Drawing the outlines...',
+                        'Sketching your features...',
+                        'Creating clean lines...',
+                        'Tracing your silhouette...'
+                    ],
+                    // Stage 6: Style application
+                    [
+                        'Applying artistic style...',
+                        'Adding caricature magic...',
+                        'Making it artistic...',
+                        'Transforming to cartoon...',
+                        'Sprinkling creativity...'
+                    ],
+                    // Stage 7: Enhancement
+                    [
+                        'Enhancing details...',
+                        'Perfecting the lines...',
+                        'Polishing the artwork...',
+                        'Making it pop...',
+                        'Adding final touches...'
+                    ],
+                    // Stage 8: Upscaling
+                    [
+                        'Upscaling image...',
+                        'Making it bigger and better...',
+                        'Enhancing resolution...',
+                        'Increasing quality...',
+                        'Supersizing the art...'
+                    ],
+                    // Stage 9: Finalization
+                    [
+                        'Finalizing masterpiece...',
+                        'Adding the finishing touches...',
+                        'Completing the artwork...',
+                        'Wrapping it up...',
+                        'Making it perfect...'
+                    ],
+                    // Stage 10: Almost done
+                    [
+                        'Almost almost complete...',
+                        'We are almost ready...',
+                        'Paint is almost dry...',
+                        'Just a few more seconds...',
+                        'Getting ready to reveal...',
+                        'Preparing your masterpiece...',
+                        'Nearly there...'
+                    ]
+                ];
+
+                // Pick random messages for this session
+                this.statusMessages = this.messageStages.map(stage =>
+                    stage[Math.floor(Math.random() * stage.length)]
+                );
+
+                this.init();
+            }
+
+            init() {
+                this.startProgress();
+                this.updateStatus();
+            }
+
+            // Custom easing function: very slow start, fast middle, very slow end
+            customEasing(t) {
+                // t is normalized time (0 to 1)
+                // Returns progress (0 to 1)
+
+                // Random values set once at the start
+                if (!this.phase1End) {
+                    this.phase1End = 0.04 + Math.random() * 0.16; // 4-20%
+                    this.phase2End = 0.80 + Math.random() * 0.15; // 80-95%
+                }
+
+                if (t < 0.333) {
+                    // First 10 seconds: 0% to 4-20%
+                    // Very slow at start
+                    const localT = t / 0.333;
+                    const eased = Math.pow(localT, 2.5); // Slow acceleration
+                    return eased * this.phase1End;
+                } else if (t < 0.666) {
+                    // Next 10 seconds: 4-20% to 80-95%
+                    // Fast in middle
+                    const localT = (t - 0.333) / 0.333;
+                    const eased = localT; // Linear, fast
+                    return this.phase1End + (eased * (this.phase2End - this.phase1End));
+                } else {
+                    // Last 10 seconds: 80-95% to 100%
+                    // Very slow at end
+                    const localT = (t - 0.666) / 0.334;
+                    const eased = 1 - Math.pow(1 - localT, 3); // Slow deceleration
+                    return this.phase2End + (eased * (1 - this.phase2End));
+                }
+            }
+
+            startProgress() {
+                const startTime = Date.now();
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    const normalizedTime = Math.min(elapsed / this.duration, 1);
+
+                    // Apply custom easing
+                    const targetProgress = this.customEasing(normalizedTime) * 100;
+
+                    // Smooth interpolation for display
+                    this.currentProgress += (targetProgress - this.currentProgress) * 0.15;
+
+                    this.progressBar.style.width = `${this.currentProgress}%`;
+                    this.percentage.textContent = `${Math.round(this.currentProgress)}%`;
+
+                    if (normalizedTime < 1 || this.currentProgress < 99.9) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        this.onComplete();
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+
+            updateStatus() {
+                let messageIndex = 0;
+                const interval = this.duration / this.statusMessages.length;
+
+                const updateMessage = () => {
+                    if (messageIndex < this.statusMessages.length) {
+                        this.statusText.style.opacity = '0';
+                        setTimeout(() => {
+                            this.statusText.textContent = this.statusMessages[messageIndex];
+                            this.statusText.style.opacity = '1';
+                            messageIndex++;
+                        }, 300);
+                    }
+                };
+
+                updateMessage();
+                const intervalId = setInterval(() => {
+                    if (messageIndex < this.statusMessages.length) {
+                        updateMessage();
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, interval);
+            }
+
+            onComplete() {
+                this.progressBar.style.width = '100%';
+                this.percentage.textContent = '100%';
+                // Use the last status message (already randomized)
+                this.statusText.textContent = this.statusMessages[this.statusMessages.length - 1];
+
+                // You can trigger a callback here when the animation is complete
+                console.log('Animation complete! Ready to display the result.');
+
+                // Example: Call a function to show the result
+                // window.parent.postMessage({ type: 'loading-complete' }, '*');
+            }
+
+            // Method to update progress externally if you want real progress from ComfyUI
+            setProgress(progress) {
+                this.targetProgress = Math.min(Math.max(progress, 0), 100);
+            }
+        }
+
+        // Initialize the loader
+        const loader = new PaintbrushLoader();
+
+        // Expose the loader globally so you can control it from outside
+        window.paintbrushLoader = loader;
+
+        // Example of receiving real progress updates from ComfyUI
+        // window.addEventListener('message', (event) => {
+        //     if (event.data.type === 'progress-update') {
+        //         loader.setProgress(event.data.progress);
+        //     }
+        // });
+    </script>
+</body>
+</html>

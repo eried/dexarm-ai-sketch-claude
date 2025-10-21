@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Settings - AI Sketch Booth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='setup.css') }}">
+</head>
+<body>
+    <div id="settings-app">
+        <div class="header">
+            <h1>General Settings</h1>
+            <a href="/" class="btn-secondary">Back to Photobooth</a>
+        </div>
+
+        <div class="setup-container">
+            <div class="setup-step">
+                <div class="step-header">
+                    <div class="step-number">⚙️</div>
+                    <h2>Application Settings</h2>
+                </div>
+
+                <div class="step-content">
+                    <!-- ComfyUI Settings -->
+                    <div class="settings-section">
+                        <h3>🎨 ComfyUI Server</h3>
+                        <div class="input-group">
+                            <label for="comfyuiUrl">ComfyUI Server URL:</label>
+                            <input type="text" id="comfyuiUrl" placeholder="http://127.0.0.1:8000">
+                            <small>ComfyUI server address. Check Settings → Server-Config in ComfyUI for the correct URL.</small>
+                        </div>
+                    </div>
+
+                    <!-- Robot Arm Settings -->
+                    <div class="settings-section">
+                        <h3>🤖 Robot Arm Settings</h3>
+                        <div class="input-group">
+                            <label for="penLiftHeight">Pen Lift Height (mm):</label>
+                            <input type="number" id="penLiftHeight" min="5" max="50" step="1" value="16">
+                            <small>How high to raise the pen when moving (default: 16mm)</small>
+                        </div>
+                    </div>
+
+                    <!-- SVG Generation Settings -->
+                    <div class="settings-section">
+                        <h3>✏️ Drawing Settings</h3>
+
+                        <div class="input-group">
+                            <label for="svgMethod">SVG Generation Method:</label>
+                            <select id="svgMethod">
+                                <optgroup label="Clean Centerline (Recommended)">
+                                    <option value="clean_v1">Clean V1 - Basic skeleton (light smooth)</option>
+                                    <option value="clean_v2">Clean V2 - Moderate smooth</option>
+                                    <option value="clean_v3">Clean V3 - With fill patterns</option>
+                                </optgroup>
+                                <optgroup label="CNC Style Methods">
+                                    <option value="method1_simple_contour">Method 1 - Simple Contour</option>
+                                    <option value="method2_hatching">Method 2 - Hatching</option>
+                                    <option value="method3_cnc_style">Method 3 - CNC Style</option>
+                                </optgroup>
+                                <optgroup label="Thick Joining">
+                                    <option value="thick_v1">Thick V1 - Conservative joining</option>
+                                </optgroup>
+                                <optgroup label="Original">
+                                    <option value="original">Original - Edge detection</option>
+                                </optgroup>
+                            </select>
+                            <small>Choose which SVG conversion method to use for drawing</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="maxCommands">Maximum Drawing Commands:</label>
+                            <input type="number" id="maxCommands" min="100" max="10000" step="100" value="5000">
+                            <small>Maximum number of pen movements (higher = more detail, longer time)</small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-primary" id="saveSettingsBtn">💾 Save Settings</button>
+                        <button class="btn-secondary" id="resetDefaultsBtn">🔄 Reset to Defaults</button>
+                    </div>
+
+                    <!-- Status Message -->
+                    <div class="status-message" id="statusMessage"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='settings.js') }}"></script>
+</body>
+</html>

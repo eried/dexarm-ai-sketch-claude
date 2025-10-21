@@ -1,0 +1,6 @@
+{
+  "comfyui_url": "http://127.0.0.1:8000",
+  "pen_lift_height": 16,
+  "svg_method": "method3_cnc_style",
+  "max_commands": 10000
+}
